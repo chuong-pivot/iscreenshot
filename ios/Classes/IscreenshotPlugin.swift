@@ -15,33 +15,33 @@ public class IscreenshotPlugin: NSObject, FlutterPlugin {
 		super.init()
 	}
 	
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "iscreenshot", binaryMessenger: registrar.messenger())
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "iscreenshot", binaryMessenger: registrar.messenger())
 
-		let app = UIApplication.shared
-		let controller :FlutterViewController = app.delegate!.window!!.rootViewController as! FlutterViewController
+        let app = UIApplication.shared
+        let controller :FlutterViewController = app.delegate!.window!!.rootViewController as! FlutterViewController
 
-		let instance = IscreenshotPlugin(
-			controller: controller,
-			messenger: registrar.messenger()
-		)
+        let instance = IscreenshotPlugin(
+            controller: controller,
+            messenger: registrar.messenger()
+        )
 
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
+        registrar.addMethodCallDelegate(instance, channel: channel)
+    }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-		if call.method != "takeScreenshot" {
-			result(FlutterMethodNotImplemented)
-			return
-		}
-		
-		self.result = result
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method != "takeScreenshot" {
+            result(FlutterMethodNotImplemented)
+            return
+        }
 
-		let arguments = call.arguments as! Dictionary<String, Any>
-		self.screenshotPath = (arguments["saveScreenshotPath"] as! String);
+        self.result = result
 
-		takeScreenshot(view: controller.view)
-  }
+        let arguments = call.arguments as! Dictionary<String, Any>
+        self.screenshotPath = (arguments["saveScreenshotPath"] as! String);
+
+        takeScreenshot(view: controller.view)
+    }
 
 
 //    @objc
@@ -72,13 +72,13 @@ public class IscreenshotPlugin: NSObject, FlutterPlugin {
 		UIGraphicsEndImageContext()
 
 		guard let image = optionalImage else {
-				result("no image")
-				return
+            result(nil)
+            return
 		}
 
 		guard let path = writeImageToPath(image: image) else {
-				result("no image 1")
-				return
+            result(nil)
+            return
 		}
 
 		result(path)
@@ -99,7 +99,7 @@ public class IscreenshotPlugin: NSObject, FlutterPlugin {
 		let paths :[URL] = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
 
 		guard let dir = paths.first else {
-				return nil
+            return nil
 		}
 
 		return dir.appendingPathComponent( self.screenshotPath )
@@ -107,18 +107,18 @@ public class IscreenshotPlugin: NSObject, FlutterPlugin {
 	
 	func writeImageToPath(image: UIImage) -> String? {
 		guard let imageData = image.pngData() else {
-				result("no image data")
-				return nil
+            result(nil)
+            return nil
 		}
 
 		guard let path = getScreenshotPath() else {
-				result("no image path")
-				return nil
+            result(nil)
+            return nil
 		}
 
 		guard let _ = try? imageData.write(to: path) else {
-				result("can't write")
-				return nil
+            result(nil)
+            return nil
 		}
 
 		return path.path

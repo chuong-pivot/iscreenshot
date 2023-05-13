@@ -32,9 +32,11 @@ class _MyAppState extends State<MyApp> {
             onPressed: () async {
               final dir = await getApplicationDocumentsDirectory();
               const fileName = 'debug_screenshot.png';
-              final savedPath = join(dir.path, fileName);
+              final savedPath = join(dir.path, 'images', fileName);
 
               await File(savedPath).create(recursive: true);
+
+              // File(savedPath).writeAsString('nani');
 
               final imgpath = await IScreenshot.takeScreenshot(
                 saveScreenshotPath: Platform.isIOS ? fileName : savedPath,
